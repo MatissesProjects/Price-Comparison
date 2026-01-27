@@ -8,9 +8,9 @@
 - [x] Task: Set up Raw CSS. ba36352
     - [x] Create `src/styles.css` with basic utility classes and reset.
     - [x] Link `styles.css` in `src/popup/popup.html`.
-- [ ] Task: Create basic Popup UI.
-    - [ ] Build a simple HTML layout in `src/popup/popup.html` linking to `../styles.css`.
-    - [ ] Add a "Status" indicator (Default: "Idle") and a "Debug Data" text area.
+- [x] Task: Create basic Popup UI. 3776776
+    - [x] Build a simple HTML layout in `src/popup/popup.html` linking to `../styles.css`.
+    - [x] Add a "Status" indicator (Default: "Idle") and a "Debug Data" text area.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Project Skeleton & Manifest' (Protocol in workflow.md).
 
 ## Phase 2: Data Ingestion Logic
