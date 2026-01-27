@@ -7,7 +7,21 @@
     <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
-    <h1>Price Comparison Tool</h1>
+    <div class="card">
+        <h2>Eaze Price Compare</h2>
+        <div style="margin-bottom: 8px;">
+            Status: <span id="status-indicator" class="status-indicator">Idle</span>
+        </div>
+        <div>
+            <button id="refresh-btn">Refresh Data</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Debug Data</h3>
+        <textarea id="debug-data" rows="10" readonly placeholder="No menu data captured yet..."></textarea>
+    </div>
+
     <script src="popup.js"></script>
 </body>
 </html>
