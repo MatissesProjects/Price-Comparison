@@ -2,12 +2,12 @@
 
 ## Core Technologies
 - **Logic:** Vanilla JavaScript (ES6+)
-- **Styling:** Tailwind CSS (via CLI build step)
+- **Styling:** Raw CSS (No build step, standard CSS3+)
 - **Platform:** Chrome Extension Manifest V3
 
 ## Build & Tooling
-- **Package Manager:** npm (for managing Tailwind and potential future dependencies)
-- **CSS Processor:** Tailwind CLI to compile utility classes into a standard CSS file.
+- **Package Manager:** npm (optional, for future dependencies)
+- **CSS Processor:** None (Native CSS)
 
 ## Architecture
 - **State Management:** Simple JavaScript objects persisted via `chrome.storage.local`.

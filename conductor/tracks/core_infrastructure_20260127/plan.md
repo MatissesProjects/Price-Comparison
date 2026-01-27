@@ -5,14 +5,11 @@
     - [x] Create `manifest.json` with `name`, `version`, `manifest_version: 3`, and permissions (`storage`, `host_permissions` for eaze.com).
     - [x] Create `src/background.js` (empty for now) and `src/content.js`.
     - [x] Create `src/popup/popup.html` and `src/popup/popup.js`.
-- [ ] Task: Set up Tailwind CSS.
-    - [ ] Initialize npm: `npm init -y`.
-    - [ ] Install Tailwind CLI: `npm install -D tailwindcss`.
-    - [ ] Configure `tailwind.config.js` to scan `src/**/*.{html,js}`.
-    - [ ] Create `src/styles.css` with Tailwind directives.
-    - [ ] Add build script to `package.json` to output to `dist/output.css`.
+- [~] Task: Set up Raw CSS.
+    - [ ] Create `src/styles.css` with basic utility classes and reset.
+    - [ ] Link `styles.css` in `src/popup/popup.html`.
 - [ ] Task: Create basic Popup UI.
-    - [ ] Build a simple HTML layout in `src/popup/popup.html` linking to `dist/output.css`.
+    - [ ] Build a simple HTML layout in `src/popup/popup.html` linking to `../styles.css`.
     - [ ] Add a "Status" indicator (Default: "Idle") and a "Debug Data" text area.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Project Skeleton & Manifest' (Protocol in workflow.md).
 
