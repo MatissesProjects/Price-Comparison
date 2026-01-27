@@ -1,10 +1,10 @@
 # Implementation Plan - Core Extension Infrastructure and Menu Ingestion
 
 ## Phase 1: Project Skeleton & Manifest
-- [ ] Task: Initialize project structure and `manifest.json` (V3).
-    - [ ] Create `manifest.json` with `name`, `version`, `manifest_version: 3`, and permissions (`storage`, `host_permissions` for eaze.com).
-    - [ ] Create `src/background.js` (empty for now) and `src/content.js`.
-    - [ ] Create `src/popup/popup.html` and `src/popup/popup.js`.
+- [x] Task: Initialize project structure and `manifest.json` (V3). ab9eeec
+    - [x] Create `manifest.json` with `name`, `version`, `manifest_version: 3`, and permissions (`storage`, `host_permissions` for eaze.com).
+    - [x] Create `src/background.js` (empty for now) and `src/content.js`.
+    - [x] Create `src/popup/popup.html` and `src/popup/popup.js`.
 - [ ] Task: Set up Tailwind CSS.
     - [ ] Initialize npm: `npm init -y`.
     - [ ] Install Tailwind CLI: `npm install -D tailwindcss`.
