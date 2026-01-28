@@ -21,7 +21,10 @@ global.chrome = {
             }
         }
     },
-    runtime: { lastError: null }
+    runtime: { 
+        lastError: null,
+        onMessage: { addListener: () => {} }
+    }
 };
 
 // --- CONTENT SCRIPT MOCK ---
