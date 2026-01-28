@@ -5,26 +5,22 @@ const path = require('path');
 const storageData = {};
 global.window = { location: { href: 'http://test.com/menu' } };
 
-// Mock DOM with multiple items
+// Mock DOM with brand-specific test cases
 const mockItems = [
-    {
-        name: 'Blue Dream Cartridge',
-        brand: 'Old Pal',
-        price: '$35',
-        category: 'Vapes'
-    },
-    {
-        name: 'Lemon Cherry Gelato',
-        brand: 'STIIIZY',
-        price: '$31',
-        category: 'Flower'
-    },
-    {
-        name: 'Dispo Vape Pen',
-        brand: 'Generic',
-        price: '$20',
-        category: 'Extract'
-    }
+    // Brand: Surplus (Should be Vape)
+    { name: 'Watermelon', brand: 'Surplus', price: '$20', category: 'Unknown', thc: '80% THC' },
+    
+    // Brand: Allswell (Should be Vape)
+    { name: 'Berry Gelato', brand: 'Allswell', price: '$25', category: 'Unknown', thc: '75% THC' },
+    
+    // Brand: Punch Edibles (Should be Vape per user)
+    { name: 'Punch Extract', brand: 'Punch Edibles', price: '$40', category: 'Extract', thc: '90% THC' },
+
+    // Brand: Circles (High THC -> Vape)
+    { name: 'High Potency', brand: 'Circles', price: '$30', category: 'Unknown', thc: '85% THC' },
+    
+    // Brand: Circles (Low THC -> Not Vape)
+    { name: 'Low Potency Flower', brand: 'Circles', price: '$15', category: 'Flower', thc: '24% THC' }
 ];
 
 global.document = {
@@ -40,6 +36,8 @@ global.document = {
                     if (s === '.e1mku4dk9') return { textContent: item.brand };
                     if (s === 'button[aria-label="Add to bag"] span span, .e1qfw1ka4 span') return { textContent: item.price };
                     if (s === '.e1dcvvwe0') return { textContent: item.category };
+                    // Mock THC selector based on common eaze class or text match
+                    if (s === '.ecac5km0') return { textContent: item.thc }; 
                     return null;
                 }
             }));
@@ -55,7 +53,7 @@ global.chrome = {
 };
 global.MutationObserver = class { observe() {} };
 
-console.log('Running Vape Detection Test (Green Phase)...');
+console.log('Running Advanced Vape Detection Test (Red Phase)...');
 const contentScript = fs.readFileSync(path.join(__dirname, '../src/content.js'), 'utf8');
 
 try {
@@ -64,32 +62,25 @@ try {
     setTimeout(() => {
         const items = storageData.latest_menu.items;
         
-        const cartridge = items.find(i => i.name.includes('Cartridge'));
-        const flower = items.find(i => i.name.includes('Gelato'));
-        const dispo = items.find(i => i.name.includes('Dispo'));
+        const surplus = items.find(i => i.brand === 'Surplus');
+        const allswell = items.find(i => i.brand === 'Allswell');
+        const punch = items.find(i => i.brand === 'Punch Edibles');
+        const circlesVape = items.find(i => i.brand === 'Circles' && i.name === 'High Potency');
+        const circlesFlower = items.find(i => i.brand === 'Circles' && i.name === 'Low Potency Flower');
 
         let failed = false;
         
-        if (!cartridge || cartridge.type !== 'vape') {
-            console.error('FAIL: "Cartridge" not identified as vape.', cartridge);
-            failed = true;
-        }
-        
-        if (!dispo || dispo.type !== 'vape') {
-            console.error('FAIL: "Dispo Vape Pen" not identified as vape.', dispo);
-            failed = true;
-        }
-
-        if (!flower || flower.type === 'vape') {
-            console.error('FAIL: "Flower" incorrectly identified as vape.', flower);
-            failed = true;
-        }
+        if (surplus.type !== 'vape') { console.error('FAIL: Surplus not identified as vape.'); failed = true; }
+        if (allswell.type !== 'vape') { console.error('FAIL: Allswell not identified as vape.'); failed = true; }
+        if (punch.type !== 'vape') { console.error('FAIL: Punch Edibles not identified as vape.'); failed = true; }
+        if (circlesVape.type !== 'vape') { console.error('FAIL: High THC Circles not identified as vape.'); failed = true; }
+        if (circlesFlower.type === 'vape') { console.error('FAIL: Low THC Circles incorrectly identified as vape.'); failed = true; }
 
         if (failed) {
             console.log('TEST FAILED.');
             process.exit(1);
         } else {
-            console.log('PASS: Vape detection verified.');
+            console.log('PASS: Advanced vape detection verified.');
             process.exit(0);
         }
     }, 100);

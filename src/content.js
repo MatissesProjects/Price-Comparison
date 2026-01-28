@@ -6,9 +6,29 @@ function extractMenu() {
     let products = [];
 
     const vapeKeywords = ['vape', 'cartridge', 'pod', 'disposable', '510', 'battery'];
+    const vapeBrands = ['surplus', 'allswell', 'punch edibles'];
     
-    function detectType(name, category) {
+    function detectType(name, category, brand, thc) {
         const fullText = `${name} ${category}`.toLowerCase();
+        const brandLower = brand.toLowerCase();
+        
+        // Brand-specific rules
+        if (vapeBrands.includes(brandLower)) {
+            return 'vape';
+        }
+
+        if (brandLower === 'circles') {
+            // Parse THC percentage (e.g., "85% THC" -> 85)
+            const thcMatch = thc ? thc.match(/(\d+(\.\d+)?)%/) : null;
+            if (thcMatch) {
+                const percentage = parseFloat(thcMatch[1]);
+                if (percentage > 60) {
+                    return 'vape';
+                }
+            }
+        }
+
+        // Keyword fallback
         if (vapeKeywords.some(keyword => fullText.includes(keyword))) {
             return 'vape';
         }
@@ -32,21 +52,24 @@ function extractMenu() {
             const priceEl = card.querySelector('button[aria-label="Add to bag"] span span, .e1qfw1ka4 span');
             const linkEl = card.querySelector('a[href*="/products/"]');
             const promoEl = card.querySelector('div[data-e2eid="tag"] span');
+            const thcEl = card.querySelector('.ecac5km0'); // THC Selector
 
             if (nameEl && priceEl) {
                 const priceText = priceEl.textContent.trim().replace('$', '');
                 const productId = linkEl?.getAttribute('href')?.split('/cid/')?.[1] || `scraped_${Math.random().toString(36).substr(2, 9)}`;
                 const name = nameEl.textContent.trim();
                 const category = card.querySelector('.e1dcvvwe0')?.textContent?.trim() || 'Unknown';
+                const brand = brandEl?.textContent?.trim() || 'Unknown';
+                const thc = thcEl?.textContent?.trim() || null;
                 
                 products.push({
                     id: productId,
                     name: name,
                     price: parseFloat(priceText),
                     category: category,
-                    brand: brandEl?.textContent?.trim() || 'Unknown',
+                    brand: brand,
                     promo_code: promoEl ? promoEl.textContent.trim() : null,
-                    type: detectType(name, category)
+                    type: detectType(name, category, brand, thc)
                 });
             }
         });
