@@ -37,4 +37,6 @@
 - [x] Task: Search and Filtering.
     - [x] Add search input to the "Menu Data" view.
     - [x] Implement real-time filtering by name, brand, or category.
+- [x] Task: UI Polish & Editing.
+    - [x] Implement cart renaming (click-to-edit).
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Price Engine & Comparison' (Protocol in workflow.md).

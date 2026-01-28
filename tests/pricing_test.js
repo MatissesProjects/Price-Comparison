@@ -38,14 +38,17 @@ const cart = {
 // Expected:
 // Subtotal: 100 + 100 + 30 = 230
 // Discount: 20 + 20 + 0 = 40
-// Total: 190
+// Subtotal After Discount: 190
+// Tax (43.75% of 190): 83.13 (rounded)
+// Total: 190 + 83.13 = 273.13
 
 const totals = Pricing.calculateCartTotal(cart, products);
 console.log('Calculated totals:', totals);
 
 assert.strictEqual(totals.subtotal, 230);
 assert.strictEqual(totals.discount, 40);
-assert.strictEqual(totals.total, 190);
+assert.strictEqual(totals.tax, 83.13);
+assert.strictEqual(totals.total, 273.13);
 assert.strictEqual(totals.itemCount, 4);
 
 console.log('PASS: calculateCartTotal');

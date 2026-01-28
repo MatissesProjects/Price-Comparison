@@ -4,6 +4,8 @@
  */
 
 const Pricing = {
+    TAX_RATE: 0.4375, // 43.75% combined taxes and fees
+
     /**
      * Parses a promo string into a discount value
      * @param {string} promo - e.g., "30% OFF", "$10 OFF", "20OFF"
@@ -64,10 +66,14 @@ const Pricing = {
             }
         });
 
+        const subtotalAfterDiscount = subtotal - totalDiscount;
+        const taxAmount = subtotalAfterDiscount * Pricing.TAX_RATE;
+
         return {
             subtotal: parseFloat(subtotal.toFixed(2)),
             discount: parseFloat(totalDiscount.toFixed(2)),
-            total: parseFloat((subtotal - totalDiscount).toFixed(2)),
+            tax: parseFloat(taxAmount.toFixed(2)),
+            total: parseFloat((subtotalAfterDiscount + taxAmount).toFixed(2)),
             itemCount: itemCount
         };
     }

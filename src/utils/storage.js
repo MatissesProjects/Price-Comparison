@@ -111,6 +111,25 @@ const Storage = {
     },
 
     /**
+     * Rename a cart
+     * @param {string} cartId 
+     * @param {string} newName 
+     */
+    renameCart: async (cartId, newName) => {
+        const carts = await Storage.getCarts();
+        const cartIndex = carts.findIndex(c => c.id === cartId);
+        if (cartIndex === -1) throw new Error('Cart not found');
+
+        carts[cartIndex].name = newName;
+
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ carts }, () => {
+                resolve(carts[cartIndex]);
+            });
+        });
+    },
+
+    /**
      * Remove a cart
      * @param {string} cartId 
      */

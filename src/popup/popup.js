@@ -215,8 +215,12 @@ async function renderCarts() {
                         <span>Discount:</span>
                         <span>-$${totals.discount.toFixed(2)}</span>
                     </div>` : ''}
+                    <div class="total-row tax">
+                        <span>Taxes & Fees (43.75%):</span>
+                        <span>$${totals.tax.toFixed(2)}</span>
+                    </div>
                     <div class="total-row grand-total">
-                        <span>Total:</span>
+                        <span>Estimated Total:</span>
                         <span>$${totals.total.toFixed(2)}</span>
                     </div>
                 </div>
@@ -227,13 +231,32 @@ async function renderCarts() {
 
         el.innerHTML = `
             <div class="cart-header">
-                <span class="cart-name">${cart.name}</span>
+                <span class="cart-name" contenteditable="true" title="Click to rename">${cart.name}</span>
                 ${isBestValue ? '<span class="badge">Best Value</span>' : ''}
                 <span class="cart-count">${totals.itemCount} items</span>
             </div>
             ${itemsHtml}
             ${totalsHtml}
         `;
+
+        // Handle renaming
+        const nameEl = el.querySelector('.cart-name');
+        nameEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                nameEl.blur();
+            }
+        });
+
+        nameEl.addEventListener('blur', async () => {
+            const newName = nameEl.textContent.trim();
+            if (newName && newName !== cart.name) {
+                await window.PriceStorage.renameCart(cart.id, newName);
+                renderCarts();
+            } else {
+                nameEl.textContent = cart.name; // Reset if empty
+            }
+        });
 
         // Add event listeners to qty buttons
         el.querySelectorAll('.inc-btn').forEach(btn => {
