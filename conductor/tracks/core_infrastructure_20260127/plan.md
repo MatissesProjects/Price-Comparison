@@ -14,9 +14,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Project Skeleton & Manifest' (Protocol in workflow.md). [checkpoint: 9773951]
 
 ## Phase 2: Data Ingestion Logic
-- [ ] Task: Analyze Eaze.com structure (Research).
-    - [ ] *Note: Since we cannot browse live, we will assume a standard React/Next.js structure or generic DOM classes first, then refine.*
-    - [ ] Create a local mock HTML file (`tests/mock_eaze_menu.html`) simulating the Eaze menu structure (using `__NEXT_DATA__` script tag pattern or standard product cards).
+- [x] Task: Analyze Eaze.com structure (Research). 24ae437
+    - [x] *Note: Since we cannot browse live, we will assume a standard React/Next.js structure or generic DOM classes first, then refine.*
+    - [x] Create a local mock HTML file (`tests/mock_eaze_menu.html`) simulating the Eaze menu structure (using `__NEXT_DATA__` script tag pattern or standard product cards).
 - [ ] Task: Implement Content Script for Data Extraction.
     - [ ] Write logic in `src/content.js` to look for `script[id="__NEXT_DATA__"]` or specific DOM elements.
     - [ ] Parse the found data into a clean format: `{ name, price, category, id }`.
