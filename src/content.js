@@ -68,6 +68,7 @@ function extractMenu() {
                 const brandEl = card.querySelector('.e1mku4dk9'); // Brand is often after the name
                 const priceEl = card.querySelector('button[aria-label="Add to bag"] span span, .e1qfw1ka4 span');
                 const linkEl = card.querySelector('a[href*="/products/"]');
+                const promoEl = card.querySelector('div[data-e2eid="tag"] span');
 
                 if (nameEl && priceEl) {
                     const priceText = priceEl.textContent.trim().replace('$', '');
@@ -78,7 +79,8 @@ function extractMenu() {
                         name: nameEl.textContent.trim(),
                         price: parseFloat(priceText),
                         category: card.querySelector('.e1dcvvwe0')?.textContent?.trim() || 'Unknown',
-                        brand: brandEl?.textContent?.trim() || 'Unknown'
+                        brand: brandEl?.textContent?.trim() || 'Unknown',
+                        promo_code: promoEl ? promoEl.textContent.trim() : null
                     });
                 }
             });
@@ -115,6 +117,15 @@ const observer = new MutationObserver(() => {
 });
 
 observer.observe(document.body, { childList: true, subtree: true });
+
+// Message Listener for popup communication
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'REFRESH_DATA') {
+        console.log('Received refresh request from popup.');
+        extractMenu();
+        sendResponse({ status: 'started' });
+    }
+});
 
 // Initial run
 extractMenu();

@@ -20,6 +20,7 @@ global.document = {
                     if (s === 'button[aria-label="Add to bag"] span span, .e1qfw1ka4 span') return { textContent: '$31' };
                     if (s === 'a[href*="/products/"]') return { getAttribute: () => '/products/test/cid/uuid-123' };
                     if (s === '.e1dcvvwe0') return { textContent: 'HYBRID' };
+                    if (s === 'div[data-e2eid="tag"] span') return { textContent: 'USE CODE 30OFF' };
                     return null;
                 }
             }];
@@ -38,7 +39,10 @@ global.chrome = {
             }
         }
     },
-    runtime: { lastError: null }
+    runtime: { 
+        lastError: null,
+        onMessage: { addListener: () => {} } 
+    }
 };
 
 global.MutationObserver = class {
@@ -61,7 +65,10 @@ try {
         const item = storageData.latest_menu.items[0];
         console.log('Extracted item:', item);
         
-        if (item.name === 'Lemon Cherry Gelato' && item.price === 31 && item.brand === 'STIIIZY') {
+        if (item.name === 'Lemon Cherry Gelato' && 
+            item.price === 31 && 
+            item.brand === 'STIIIZY' &&
+            item.promo_code === 'USE CODE 30OFF') {
             console.log('PASS: Data extraction successful for live Eaze structure.');
             process.exit(0);
         } else {

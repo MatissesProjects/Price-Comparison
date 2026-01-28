@@ -16,8 +16,10 @@ global.document = {
     getElementById: (id) => dom[id]
 };
 
-// Mock Storage
+// Mock Storage & Tabs
 let storageData = {};
+let sentMessages = [];
+
 global.chrome = {
     storage: {
         local: {
@@ -27,7 +29,15 @@ global.chrome = {
                 cb(res);
             }
         }
-    }
+    },
+    tabs: {
+        query: (queryInfo, cb) => cb([{ id: 123 }]),
+        sendMessage: (tabId, msg, cb) => {
+            sentMessages.push({ tabId, msg });
+            if (cb) cb({ status: 'ok' });
+        }
+    },
+    runtime: { lastError: null }
 };
 
 // Helper to reset mocks
@@ -36,6 +46,7 @@ function resetMocks() {
     dom['status-indicator'].style = {};
     dom['debug-data'].value = '';
     storageData = {};
+    sentMessages = [];
 }
 
 // Load Script
@@ -72,6 +83,14 @@ setTimeout(() => {
         global.triggerRefresh();
         
         setTimeout(() => {
+            // Check if message was sent
+            if (sentMessages.length > 0 && sentMessages[0].msg.action === 'REFRESH_DATA') {
+                console.log('PASS: Refresh button triggered REFRESH_DATA message.');
+            } else {
+                console.error('FAIL: Refresh button did not send message.', sentMessages);
+                process.exit(1);
+            }
+
             if (dom['status-indicator'].textContent === 'Data Captured' && 
                 dom['debug-data'].value.includes('Test Item')) {
                 console.log('PASS: Data display correctly updates from storage.');
@@ -81,7 +100,7 @@ setTimeout(() => {
                 console.log('Debug:', dom['debug-data'].value);
                 process.exit(1);
             }
-        }, 50);
+        }, 1100); // Wait > 1000ms for popup timeout
     } else {
         console.error('FAIL: Refresh handler not registered.');
         process.exit(1);
@@ -92,4 +111,4 @@ setTimeout(() => {
 setTimeout(() => {
     console.log('All Popup Tests Passed.');
     process.exit(0);
-}, 200);
+}, 1500);
