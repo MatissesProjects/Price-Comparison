@@ -55,29 +55,30 @@ function extractMenu() {
     if (products.length === 0) {
         console.log('No products found in JSON, trying DOM scraping...');
         
-        // Try specific Eaze-like selectors (if we knew them) or generic ones
-        const selectors = ['.product-card', '[data-testid="product-card"]', '.ProductCard'];
-        let cards = [];
-        for (const selector of selectors) {
-            cards = document.querySelectorAll(selector);
-            if (cards.length > 0) {
-                console.log(`Found cards using selector: ${selector}`);
-                break;
-            }
-        }
-
+        // Eaze specific selectors based on live data
+        const cards = document.querySelectorAll('.esxr620, [data-e2eid="product-image-container"]');
+        
         if (cards.length > 0) {
-            cards.forEach(card => {
-                const name = card.querySelector('h1, h2, h3, .name, .title')?.textContent?.trim();
-                const priceText = card.innerText.match(/\$\d+(\.\d{2})?/)?.[0];
+            console.log(`Found ${cards.length} potential product containers.`);
+            cards.forEach(cardContainer => {
+                // Navigate up to a common parent if we found the image container
+                const card = cardContainer.hasAttribute('data-e2eid') ? cardContainer.closest('.e1mku4dk0') || cardContainer.parentElement.parentElement : cardContainer;
                 
-                if (name && priceText) {
+                const nameEl = card.querySelector('[data-e2eid="productCardName"]');
+                const brandEl = card.querySelector('.e1mku4dk9'); // Brand is often after the name
+                const priceEl = card.querySelector('button[aria-label="Add to bag"] span span, .e1qfw1ka4 span');
+                const linkEl = card.querySelector('a[href*="/products/"]');
+
+                if (nameEl && priceEl) {
+                    const priceText = priceEl.textContent.trim().replace('$', '');
+                    const productId = linkEl?.getAttribute('href')?.split('/cid/')?.[1] || `scraped_${Math.random().toString(36).substr(2, 9)}`;
+                    
                     products.push({
-                        id: card.id || card.getAttribute('data-id') || `scraped_${Math.random().toString(36).substr(2, 9)}`,
-                        name: name,
-                        price: parseFloat(priceText.replace('$', '')),
-                        category: 'Unknown',
-                        brand: 'Unknown'
+                        id: productId,
+                        name: nameEl.textContent.trim(),
+                        price: parseFloat(priceText),
+                        category: card.querySelector('.e1dcvvwe0')?.textContent?.trim() || 'Unknown',
+                        brand: brandEl?.textContent?.trim() || 'Unknown'
                     });
                 }
             });

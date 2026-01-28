@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Runner - Core Infrastructure</title>
+</head>
+<body>
+    <h1>Test Runner</h1>
+    <div id="test-output"></div>
+
+    <!-- MOCK DATA START -->
+    <script id="__NEXT_DATA__" type="application/json">
+        {
+            "props": {
+                "pageProps": {
+                    "initialState": {
+                        "menu": {
+                            "products": [
+                                {
+                                    "id": "prod_1",
+                                    "name": "Blue Dream",
+                                    "price": 35.00,
+                                    "category": "Flower",
+                                    "brand": "Old Pal"
+                                },
+                                {
+                                    "id": "prod_2",
+                                    "name": "Sleep Gummies",
+                                    "price": 18.50,
+                                    "category": "Edibles",
+                                    "brand": "Kiva"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- MOCK DATA END -->
+
+    <!-- Load Test Harness -->
+    <script src="spec.js"></script>
+
+    <!-- Load Source Code (Content Script) -->
+    <script src="../src/content.js"></script>
+</body>
+</html>
