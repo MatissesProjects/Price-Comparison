@@ -21,13 +21,16 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Cart UI & Interaction' (Protocol in workflow.md).
 
 ## Phase 3: Price Engine & Comparison
-- [ ] Task: Implement Price Calculation Logic.
-    - [ ] Create `src/utils/pricing.js`.
-    - [ ] Function `calculateCartTotal(cart, products)`:
+- [x] Task: Implement Price Calculation Logic.
+    - [x] Create `src/utils/pricing.js`.
+    - [x] Function `calculateCartTotal(cart, products)`:
         -   Iterate items.
         -   Parse `promo_code` (e.g., "30OFF" -> 0.30 multiplier).
         -   Return `{ subtotal, discount, total }`.
-- [ ] Task: Update Cart UI with Totals.
-    - [ ] Display calculated totals for each cart card.
-    -   Highlight the cheapest cart (e.g., green border or "Best Value" badge).
+- [x] Task: Update Cart UI with Totals.
+    - [x] Display calculated totals for each cart card.
+    - [x] Highlight the cheapest cart (e.g., green border or "Best Value" badge).
+    - [x] Add item list visibility within each cart.
+    - [x] Implement quantity incrementing inside the cart.
+    - [x] Show individual item discounts in the cart view.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Price Engine & Comparison' (Protocol in workflow.md).
