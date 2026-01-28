@@ -24,7 +24,7 @@
 - [x] Task: Implement Message Passing. 0a2f37d
     - [x] Update `src/content.js` to send extracted data to `chrome.storage.local` directly (or via background if needed, but direct save is allowed in V3 content scripts for `storage.local`).
     - [x] Save under key `latest_menu`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Data Ingestion Logic' (Protocol in workflow.md).
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Data Ingestion Logic' (Protocol in workflow.md). [checkpoint: 5e9a309]
 
 ## Phase 3: Storage & Verification
 - [ ] Task: Connect Popup to Storage.
