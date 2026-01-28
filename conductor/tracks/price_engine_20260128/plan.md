@@ -4,6 +4,7 @@
 - [x] Task: Refine Vape Detection Logic. 97b4634
     - [x] Update `src/content.js` to check for keywords (cartridge, pod, disposable, vape) and assign a normalized `type`.
     - [x] Update `tests/node_test.js` to verify vape detection.
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Data Structure & Vape Detection' (Protocol in workflow.md). [checkpoint: b2f72af]
 - [x] Task: Implement Cart Data Store. b5bf334
     - [x] Create `src/utils/storage.js` (or similar) to abstract `chrome.storage.local` operations for Carts and Products.
     - [x] Define helper functions: `createCart(name)`, `addToCart(cartId, productId)`, `getCart(id)`.
