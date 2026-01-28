@@ -31,6 +31,6 @@
     - [x] Update `src/popup/popup.js` to read `latest_menu` from `chrome.storage.local` on load.
     - [x] Display the item count and raw JSON in the "Debug Data" text area.
     - [x] Add a "Refresh" button to re-read storage.
-- [ ] Task: Final Integration Verification.
-    - [ ] Verify the full flow: Load Mock Page -> Content Script Runs -> Saves to Storage -> Popup Displays Data.
+- [x] Task: Final Integration Verification. 5621421
+    - [x] Verify the full flow: Load Mock Page -> Content Script Runs -> Saves to Storage -> Popup Displays Data.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Storage & Verification' (Protocol in workflow.md).
