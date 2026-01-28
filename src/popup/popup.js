@@ -158,18 +158,22 @@ async function renderCarts() {
         return;
     }
 
-    // Calculate totals for all carts first to find the best value
-    const cartTotals = carts.map(cart => ({
-        cart,
-        totals: window.PriceEngine.calculateCartTotal(cart, products)
-    }));
+    // Calculate totals and average price for all carts first to find the best value
+    const cartTotals = carts.map(cart => {
+        const totals = window.PriceEngine.calculateCartTotal(cart, products);
+        return {
+            cart,
+            totals,
+            avgPrice: totals.itemCount > 0 ? totals.total / totals.itemCount : Infinity
+        };
+    });
 
-    // Find min total among non-empty carts
+    // Find min average price among non-empty carts
     const validCarts = cartTotals.filter(ct => ct.totals.itemCount > 0);
-    const minTotal = validCarts.length > 0 ? Math.min(...validCarts.map(ct => ct.totals.total)) : Infinity;
+    const minAvgPrice = validCarts.length > 0 ? Math.min(...validCarts.map(ct => ct.avgPrice)) : Infinity;
 
-    cartTotals.forEach(({ cart, totals }) => {
-        const isBestValue = validCarts.length > 1 && totals.total === minTotal && totals.total > 0;
+    cartTotals.forEach(({ cart, totals, avgPrice }) => {
+        const isBestValue = validCarts.length > 1 && avgPrice === minAvgPrice && totals.total > 0;
         
         const el = document.createElement('div');
         el.className = `cart-item ${isBestValue ? 'best-value' : ''}`;
