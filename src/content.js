@@ -2,46 +2,47 @@
 console.log('Price Comparison Tool: Content script loaded.');
 
 function extractMenu() {
-    console.log('Attempting extraction...');
+    console.log('Attempting extraction at:', window.location.href);
     let products = [];
 
-    // Debug: Log all script tags to find hidden data
-    const scripts = document.querySelectorAll('script');
-    console.log(`Found ${scripts.length} script tags.`);
-    scripts.forEach((s, i) => {
-        if (s.textContent.includes('"price"') || s.textContent.includes('"name"')) {
-            console.log(`Potential Data in Script #${i} (id: ${s.id}):`, s.textContent.substring(0, 200) + '...');
-        }
-    });
-
-    // Strategy 1: Next.js Data Blob (Expanded)
+    // Strategy 1: Next.js Data Blob
     const nextData = document.getElementById('__NEXT_DATA__');
     if (nextData) {
+        console.log('Found __NEXT_DATA__ script tag.');
         try {
             const jsonData = JSON.parse(nextData.textContent);
-            console.log('Found __NEXT_DATA__:', jsonData);
-            // Try to find an array that looks like products
-            // This is a recursive search for any array containing objects with 'price' and 'name'
-            const findProducts = (obj) => {
-                if (!obj || typeof obj !== 'object') return [];
-                if (Array.isArray(obj)) {
-                    const sample = obj[0];
-                    if (sample && typeof sample === 'object' && 'name' in sample && ('price' in sample || 'price_cents' in sample)) {
-                        return obj;
-                    }
-                    return obj.flatMap(findProducts);
-                }
-                return Object.values(obj).flatMap(findProducts);
-            };
             
-            const found = findProducts(jsonData);
-            if (found.length > 0) {
-                console.log('Deep search found potential products in JSON:', found);
-                products = found.map(p => ({
-                    id: p.id || p._id || `gen_${Math.random()}`,
+            // Recursive search for products
+            function findProductArrays(obj) {
+                if (!obj || typeof obj !== 'object') return [];
+                
+                if (Array.isArray(obj)) {
+                    // Check if this array contains objects that look like products
+                    const isProductArray = obj.length > 0 && obj.every(item => 
+                        item && typeof item === 'object' && 
+                        (item.name || item.title) && 
+                        (item.price !== undefined || item.price_cents !== undefined)
+                    );
+                    
+                    if (isProductArray) return [obj];
+                    
+                    return obj.flatMap(findProductArrays);
+                }
+                
+                return Object.values(obj).flatMap(findProductArrays);
+            }
+
+            const potentialArrays = findProductArrays(jsonData);
+            if (potentialArrays.length > 0) {
+                // Take the largest array found
+                const bestArray = potentialArrays.reduce((a, b) => a.length > b.length ? a : b);
+                console.log(`Found ${bestArray.length} products in JSON.`);
+                
+                products = bestArray.map(p => ({
+                    id: p.id || p._id || p.sku || `gen_${Math.random().toString(36).substr(2, 9)}`,
                     name: p.name || p.title,
                     price: p.price || (p.price_cents ? p.price_cents / 100 : 0),
-                    category: p.category || p.type || 'Unknown',
+                    category: p.category || p.type || 'General',
                     brand: p.brand || p.brand_name || 'Unknown'
                 }));
             }
@@ -50,45 +51,45 @@ function extractMenu() {
         }
     }
 
-    // Strategy 2: DOM Scraping (Fallback - Expanded)
+    // Strategy 2: DOM Scraping (Fallback)
     if (products.length === 0) {
-        console.log('Trying generic DOM scraping...');
-        // Try to find elements that look like prices
-        const priceElements = Array.from(document.querySelectorAll('*')).filter(el => 
-            el.children.length === 0 && /^\$\d+(\.\d{2})?$/.test(el.textContent.trim())
-        );
+        console.log('No products found in JSON, trying DOM scraping...');
         
-        console.log(`Found ${priceElements.length} price-like elements.`);
-        
-        priceElements.forEach(priceEl => {
-            // Traverse up to find a container
-            let container = priceEl.parentElement;
-            let attempts = 0;
-            while (container && attempts < 3) {
-                const text = container.innerText;
-                if (text.length > 10 && text.length < 500) {
-                    // This container likely holds the product info
-                    products.push({
-                         id: `scraped_${Math.random()}`,
-                         name: 'Unknown (Scraped)', // Placeholder, implies we need better selectors
-                         price: parseFloat(priceEl.textContent.replace('$', '')),
-                         raw_text: text.substring(0, 50)
-                    });
-                    break;
-                }
-                container = container.parentElement;
-                attempts++;
+        // Try specific Eaze-like selectors (if we knew them) or generic ones
+        const selectors = ['.product-card', '[data-testid="product-card"]', '.ProductCard'];
+        let cards = [];
+        for (const selector of selectors) {
+            cards = document.querySelectorAll(selector);
+            if (cards.length > 0) {
+                console.log(`Found cards using selector: ${selector}`);
+                break;
             }
-        });
+        }
+
+        if (cards.length > 0) {
+            cards.forEach(card => {
+                const name = card.querySelector('h1, h2, h3, .name, .title')?.textContent?.trim();
+                const priceText = card.innerText.match(/\$\d+(\.\d{2})?/)?.[0];
+                
+                if (name && priceText) {
+                    products.push({
+                        id: card.id || card.getAttribute('data-id') || `scraped_${Math.random().toString(36).substr(2, 9)}`,
+                        name: name,
+                        price: parseFloat(priceText.replace('$', '')),
+                        category: 'Unknown',
+                        brand: 'Unknown'
+                    });
+                }
+            });
+        }
     }
 
     if (products.length > 0) {
+        console.log(`Successfully extracted ${products.length} products.`);
         saveMenuData(products);
     } else {
-        console.warn('No products found on page.');
+        console.warn('Extraction failed: No products identified.');
     }
-
-    return products;
 }
 
 function saveMenuData(products) {
@@ -98,16 +99,21 @@ function saveMenuData(products) {
     };
     chrome.storage.local.set({ latest_menu: data }, () => {
         if (chrome.runtime.lastError) {
-            console.error('Error saving menu data:', chrome.runtime.lastError);
+            console.error('Save failed:', chrome.runtime.lastError);
         } else {
-            console.log('Menu data saved to storage:', data);
+            console.log('Data saved successfully.');
         }
     });
 }
 
-// Run extraction on load
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', extractMenu);
-} else {
-    extractMenu();
-}
+// Observe for dynamic changes (Eaze might load data after initial load)
+let timeout;
+const observer = new MutationObserver(() => {
+    clearTimeout(timeout);
+    timeout = setTimeout(extractMenu, 2000); // Wait 2s after last change
+});
+
+observer.observe(document.body, { childList: true, subtree: true });
+
+// Initial run
+extractMenu();
