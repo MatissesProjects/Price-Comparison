@@ -17,32 +17,7 @@ const cartList = document.getElementById('cart-list');
 // Search
 const menuSearch = document.getElementById('menu-search');
 let currentMenuItems = [];
-
-// Cart Form
-const newCartName = document.getElementById('new-cart-name');
-const createCartBtn = document.getElementById('create-cart-btn');
-
-// Modal
-const cartModal = document.getElementById('cart-modal');
-const modalItemName = document.getElementById('modal-item-name');
-const modalCartList = document.getElementById('modal-cart-list');
-const modalCancel = document.getElementById('modal-cancel');
-
-// --- Tab Logic ---
-function switchTab(tab) {
-    if (tab === 'menu') {
-        tabMenu.classList.add('active');
-        tabCarts.classList.remove('active');
-        viewMenu.classList.remove('hidden');
-        viewCarts.classList.add('hidden');
-    } else {
-        tabMenu.classList.remove('active');
-        tabCarts.classList.add('active');
-        viewMenu.classList.add('hidden');
-        viewCarts.classList.remove('hidden');
-        renderCarts(); 
-    }
-}
+let currentCategory = 'all';
 
 tabMenu.addEventListener('click', () => switchTab('menu'));
 tabCarts.addEventListener('click', () => switchTab('carts'));
@@ -89,15 +64,37 @@ function readStorage() {
     });
 }
 
+// Filter Logic
+
+const filterBtns = document.querySelectorAll('.filter-btn');
+
+filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Update UI
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Update State
+        currentCategory = btn.getAttribute('data-category');
+        filterAndRenderMenu();
+    });
+});
+
 function filterAndRenderMenu() {
     const query = menuSearch.value.toLowerCase();
     const filteredItems = currentMenuItems.filter(item => {
-        return (
+        // Category Filter
+        const matchesCategory = currentCategory === 'all' || (item.type && item.type.toLowerCase() === currentCategory);
+        
+        // Search Filter
+        const matchesSearch = (
             item.name.toLowerCase().includes(query) ||
             item.brand.toLowerCase().includes(query) ||
             (item.type && item.type.toLowerCase().includes(query)) ||
             (item.category && item.category.toLowerCase().includes(query))
         );
+
+        return matchesCategory && matchesSearch;
     });
     renderMenu(filteredItems);
 }

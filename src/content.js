@@ -8,6 +8,11 @@ function extractMenu() {
     const vapeKeywords = ['vape', 'cartridge', 'pod', 'disposable', '510', 'battery'];
     const vapeBrands = ['surplus', 'allswell', 'punch edibles'];
     
+    const edibleKeywords = ['gummy', 'gummi', 'chocolate', 'cookie', 'brownie', 'biscuit', 'edible', 'chew', 'capsule', 'pill', 'tablet', 'drink', 'beverage', 'syrup', 'tincture', 'drops', 'lozenge'];
+    const flowerKeywords = ['flower', 'bud', 'smalls', 'shake', 'ounce', 'eighth', 'gram'];
+    const prerollKeywords = ['preroll', 'pre-roll', 'joint', 'blunt', 'cone'];
+    const extractKeywords = ['wax', 'shatter', 'crumble', 'sauce', 'badder', 'budder', 'sugar', 'diamonds', 'sand', 'kief', 'hash', 'resin', 'rosin'];
+
     function detectType(name, category, brand, thc) {
         const fullText = `${name} ${category}`.toLowerCase();
         const brandLower = brand.toLowerCase();
@@ -15,6 +20,12 @@ function extractMenu() {
         // Brand-specific rules
         if (vapeBrands.includes(brandLower)) {
             return 'vape';
+        }
+
+        // Special case for 'Punch Edibles' - usually edibles, but check keywords to be safe or default to edible
+        if (brandLower === 'punch edibles') {
+             if (vapeKeywords.some(k => fullText.includes(k))) return 'vape';
+             return 'edible';
         }
 
         if (brandLower === 'circles') {
@@ -28,10 +39,23 @@ function extractMenu() {
             }
         }
 
-        // Keyword fallback
+        // Priority Check: Preroll (often contains "flower" keyword so check first)
+        if (prerollKeywords.some(k => fullText.includes(k))) return 'preroll';
+
+        // Check Vapes
         if (vapeKeywords.some(keyword => fullText.includes(keyword))) {
             return 'vape';
         }
+        
+        // Check Edibles
+        if (edibleKeywords.some(k => fullText.includes(k))) return 'edible';
+
+        // Check Flower
+        if (flowerKeywords.some(k => fullText.includes(k))) return 'flower';
+
+        // Check Extracts
+        if (extractKeywords.some(k => fullText.includes(k))) return 'extract';
+
         return 'other';
     }
 
