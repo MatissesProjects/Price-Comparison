@@ -91,6 +91,25 @@ button:hover {
     overflow-y: auto;
 }
 
+.search-container {
+    margin-bottom: 10px;
+}
+
+.search-container input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+.search-container input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
 .cart-item, .menu-item {
     border: 1px solid #e5e7eb;
     border-radius: 6px;

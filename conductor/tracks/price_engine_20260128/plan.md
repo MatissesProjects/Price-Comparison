@@ -18,7 +18,7 @@
 - [x] Task: Add to Cart Functionality. 230fa3f
     - [x] In the "Menu Data" view, add an "Add to Cart" button next to each item.
     - [x] specific modal or dropdown to select which cart(s) to add to.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Cart UI & Interaction' (Protocol in workflow.md).
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Cart UI & Interaction' (Protocol in workflow.md).
 
 ## Phase 3: Price Engine & Comparison
 - [x] Task: Implement Price Calculation Logic.
@@ -31,7 +31,10 @@
     - [x] Display calculated totals for each cart card.
     - [x] Highlight the cheapest cart (e.g., green border or "Best Value" badge).
     - [x] Add item list visibility within each cart.
-    - [x] Implement quantity incrementing inside the cart.
+    - [x] Implement quantity incrementing and decrementing inside the cart.
     - [x] Show individual item discounts in the cart view.
     - [x] Implement item removal from carts.
+- [x] Task: Search and Filtering.
+    - [x] Add search input to the "Menu Data" view.
+    - [x] Implement real-time filtering by name, brand, or category.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Price Engine & Comparison' (Protocol in workflow.md).

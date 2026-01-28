@@ -14,6 +14,10 @@ const viewCarts = document.getElementById('view-carts');
 const menuList = document.getElementById('menu-list');
 const cartList = document.getElementById('cart-list');
 
+// Search
+const menuSearch = document.getElementById('menu-search');
+let currentMenuItems = [];
+
 // Cart Form
 const newCartName = document.getElementById('new-cart-name');
 const createCartBtn = document.getElementById('create-cart-btn');
@@ -75,7 +79,8 @@ function readStorage() {
             statusIndicator.style.backgroundColor = '#d1fae5';
             statusIndicator.style.color = '#065f46';
             
-            renderMenu(items);
+            currentMenuItems = items;
+            filterAndRenderMenu();
         } else {
             console.log('No data found in storage.');
             statusIndicator.textContent = 'Idle';
@@ -83,6 +88,21 @@ function readStorage() {
         }
     });
 }
+
+function filterAndRenderMenu() {
+    const query = menuSearch.value.toLowerCase();
+    const filteredItems = currentMenuItems.filter(item => {
+        return (
+            item.name.toLowerCase().includes(query) ||
+            item.brand.toLowerCase().includes(query) ||
+            (item.type && item.type.toLowerCase().includes(query)) ||
+            (item.category && item.category.toLowerCase().includes(query))
+        );
+    });
+    renderMenu(filteredItems);
+}
+
+menuSearch.addEventListener('input', filterAndRenderMenu);
 
 function renderMenu(items) {
     menuList.innerHTML = '';
@@ -171,7 +191,8 @@ async function renderCarts() {
                             </div>
                             <div class="product-meta">
                                 ${product.promo_code ? `<span class="product-promo">${product.promo_code}</span>` : ''}
-                                <button class="qty-btn" data-cart-id="${cart.id}" data-product-id="${product.id}">+</button>
+                                <button class="qty-btn dec-btn" data-cart-id="${cart.id}" data-product-id="${product.id}">-</button>
+                                <button class="qty-btn inc-btn" data-cart-id="${cart.id}" data-product-id="${product.id}">+</button>
                                 <button class="remove-item-btn" data-cart-id="${cart.id}" data-product-id="${product.id}" title="Remove item">&times;</button>
                             </div>
                         </div>
@@ -215,12 +236,22 @@ async function renderCarts() {
         `;
 
         // Add event listeners to qty buttons
-        el.querySelectorAll('.qty-btn').forEach(btn => {
+        el.querySelectorAll('.inc-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 e.stopPropagation();
                 const cartId = btn.getAttribute('data-cart-id');
                 const productId = btn.getAttribute('data-product-id');
                 await window.PriceStorage.addToCart(cartId, productId, 1);
+                renderCarts();
+            });
+        });
+
+        el.querySelectorAll('.dec-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const cartId = btn.getAttribute('data-cart-id');
+                const productId = btn.getAttribute('data-product-id');
+                await window.PriceStorage.decrementCartItem(cartId, productId);
                 renderCarts();
             });
         });
