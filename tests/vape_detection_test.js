@@ -3,7 +3,7 @@ const path = require('path');
 
 // Mock Environment
 const storageData = {};
-global.window = { location: { href: 'http://test.com/menu' } };
+global.window = { location: { href: 'https://www.eaze.com/menu' } };
 
 // Mock DOM with brand-specific test cases
 const mockItems = [
@@ -59,9 +59,15 @@ global.document = {
 
 global.chrome = {
     storage: { local: { set: (data, cb) => { Object.assign(storageData, data); if (cb) cb(); } } },
-    runtime: { lastError: null, onMessage: { addListener: () => {} } }
+    runtime: { id: 'test-id', lastError: null, onMessage: { addListener: () => {} } }
 };
-global.MutationObserver = class { observe() {} };
+global.MutationObserver = class { 
+    constructor() {
+        global.observer = this;
+    }
+    observe() {} 
+    disconnect() {}
+};
 
 console.log('Running Advanced Vape Detection Test (Red Phase)...');
 const contentScript = fs.readFileSync(path.join(__dirname, '../src/content.js'), 'utf8');

@@ -4,7 +4,7 @@ const path = require('path');
 // Mock Environment
 const storageData = {};
 global.window = {
-    location: { href: 'http://test.com/menu' }
+    location: { href: 'https://www.eaze.com/menu' }
 };
 
 // Simple DOM Mock for Node
@@ -14,6 +14,7 @@ global.document = {
         if (selector === '.esxr620, [data-e2eid="product-image-container"]') {
             return [{
                 hasAttribute: (attr) => attr === 'data-e2eid' ? false : false,
+                querySelectorAll: () => [],
                 querySelector: (s) => {
                     if (s === '[data-e2eid="productCardName"]') return { textContent: 'Lemon Cherry Gelato' };
                     if (s === '.e1mku4dk9') return { textContent: 'STIIIZY' };
@@ -40,6 +41,7 @@ global.chrome = {
         }
     },
     runtime: { 
+        id: 'test-id',
         lastError: null,
         onMessage: { addListener: () => {} } 
     }
@@ -47,6 +49,7 @@ global.chrome = {
 
 global.MutationObserver = class {
     observe() {}
+    disconnect() {}
 };
 
 // Load and Run Content Script

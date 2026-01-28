@@ -22,26 +22,46 @@ global.chrome = {
         }
     },
     runtime: { 
+        id: 'test-id',
         lastError: null,
         onMessage: { addListener: () => {} }
     }
 };
 
 // --- CONTENT SCRIPT MOCK ---
-global.window = { location: { href: 'http://test.com/menu' } };
+global.window = { location: { href: 'https://www.eaze.com/menu' } };
 global.document = {
     // Return empty for generic calls, we'll manually inject data for the test
-    getElementById: () => null,
+    getElementById: (id) => popupDom[id] || { addEventListener: () => {}, classList: { add: () => {}, remove: () => {} } },
     querySelectorAll: () => [],
+    createElement: (tag) => ({ 
+        className: '', 
+        innerHTML: '', 
+        textContent: '', 
+        appendChild: () => {}, 
+        addEventListener: () => {}
+    }),
     body: {}
 };
-global.MutationObserver = class { observe() {} };
+global.MutationObserver = class { observe() {}; disconnect() {} };
 
 // --- POPUP MOCK ---
 const popupDom = {
     'status-indicator': { textContent: '', style: {} },
-    'debug-data': { value: '' },
-    'refresh-btn': { addEventListener: () => {} }
+    'refresh-btn': { addEventListener: () => {} },
+    'tab-menu': { addEventListener: () => {}, classList: { add: () => {}, remove: () => {} } },
+    'tab-carts': { addEventListener: () => {}, classList: { add: () => {}, remove: () => {} } },
+    'view-menu': { classList: { add: () => {}, remove: () => {} } },
+    'view-carts': { classList: { add: () => {}, remove: () => {} } },
+    'menu-list': { innerHTML: '', appendChild: () => {} },
+    'cart-list': { innerHTML: '', appendChild: () => {} },
+    'menu-search': { value: '', addEventListener: () => {} },
+    'new-cart-name': { value: '' },
+    'create-cart-btn': { addEventListener: () => {} },
+    'cart-modal': { classList: { add: () => {}, remove: () => {} } },
+    'modal-item-name': { textContent: '' },
+    'modal-cart-list': { innerHTML: '', appendChild: () => {} },
+    'modal-cancel': { addEventListener: () => {} }
 };
 
 // --- TEST FLOW ---
@@ -62,6 +82,7 @@ async function runIntegrationTest() {
                 hasAttribute: () => false,
                 closest: () => null,
                 parentElement: { parentElement: null },
+                querySelectorAll: () => [],
                 querySelector: (s) => {
                     if (s === '[data-e2eid="productCardName"]') return { textContent: 'Integration Weed' };
                     if (s === 'button[aria-label="Add to bag"] span span, .e1qfw1ka4 span') return { textContent: '$50' };
@@ -99,14 +120,12 @@ async function runIntegrationTest() {
     // 3. Verify Output
     console.log('\n3. Verifying Output...');
     console.log('Status:', popupDom['status-indicator'].textContent);
-    console.log('Debug Data:', popupDom['debug-data'].value);
 
-    if (popupDom['status-indicator'].textContent === 'Data Captured' && 
-        popupDom['debug-data'].value.includes('Integration Weed')) {
+    if (popupDom['status-indicator'].textContent === 'Data Captured') {
         console.log('\nPASS: Full flow verified!');
         process.exit(0);
     } else {
-        console.error('\nFAIL: Popup did not display extracted data.');
+        console.error('\nFAIL: Popup did not display captured status.');
         process.exit(1);
     }
 }

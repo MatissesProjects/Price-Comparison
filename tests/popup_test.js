@@ -11,6 +11,7 @@ const dom = {
     'view-carts': { classList: { add: () => {}, remove: () => {} } },
     'menu-list': { innerHTML: '', appendChild: (el) => { if(el.className==='menu-item') global.lastMenuItem = el; } },
     'cart-list': { innerHTML: '', appendChild: () => {} },
+    'menu-search': { value: '', addEventListener: () => {} },
     'new-cart-name': { value: '' },
     'create-cart-btn': { addEventListener: (e, cb) => global.clickCreateCart = cb },
     

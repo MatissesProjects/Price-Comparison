@@ -14,7 +14,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://*.eaze.com/*", "<all_urls>"],
+      "matches": ["*://*.eaze.com/*"],
       "js": ["src/content.js"]
     }
   ],
