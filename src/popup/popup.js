@@ -2,7 +2,6 @@ console.log('Popup script loaded.');
 
 // DOM Elements
 const statusIndicator = document.getElementById('status-indicator');
-const debugData = document.getElementById('debug-data');
 const refreshBtn = document.getElementById('refresh-btn');
 
 // Tabs
@@ -11,10 +10,19 @@ const tabCarts = document.getElementById('tab-carts');
 const viewMenu = document.getElementById('view-menu');
 const viewCarts = document.getElementById('view-carts');
 
-// Carts
+// Lists
+const menuList = document.getElementById('menu-list');
 const cartList = document.getElementById('cart-list');
+
+// Cart Form
 const newCartName = document.getElementById('new-cart-name');
 const createCartBtn = document.getElementById('create-cart-btn');
+
+// Modal
+const cartModal = document.getElementById('cart-modal');
+const modalItemName = document.getElementById('modal-item-name');
+const modalCartList = document.getElementById('modal-cart-list');
+const modalCancel = document.getElementById('modal-cancel');
 
 // --- Tab Logic ---
 function switchTab(tab) {
@@ -28,7 +36,7 @@ function switchTab(tab) {
         tabCarts.classList.add('active');
         viewMenu.classList.add('hidden');
         viewCarts.classList.remove('hidden');
-        renderCarts(); // Refresh list when switching
+        renderCarts(); 
     }
 }
 
@@ -43,7 +51,7 @@ function updatePopup(shouldRefetch = false) {
             if (tabs[0]) {
                 chrome.tabs.sendMessage(tabs[0].id, { action: 'REFRESH_DATA' }, (response) => {
                     if (chrome.runtime.lastError) {
-                        console.log('Could not send message to content script (likely not loaded on this page).');
+                        console.log('Could not send message to content script.');
                     } else {
                         console.log('Refresh command sent:', response);
                     }
@@ -67,14 +75,49 @@ function readStorage() {
             statusIndicator.style.backgroundColor = '#d1fae5';
             statusIndicator.style.color = '#065f46';
             
-            debugData.value = `Last captured: ${new Date(timestamp).toLocaleString()}\n` +
-                             `Items found: ${items.length}\n\n` +
-                             JSON.stringify(items, null, 2);
+            renderMenu(items);
         } else {
             console.log('No data found in storage.');
             statusIndicator.textContent = 'Idle';
-            debugData.value = 'No menu data captured yet. Visit Eaze.com/menu to start.';
+            menuList.innerHTML = '<p class="empty-state">No menu data captured yet. Visit Eaze.com/menu to start.</p>';
         }
+    });
+}
+
+function renderMenu(items) {
+    menuList.innerHTML = '';
+    if (items.length === 0) {
+        menuList.innerHTML = '<p class="empty-state">No items found.</p>';
+        return;
+    }
+
+    items.forEach(item => {
+        const el = document.createElement('div');
+        el.className = 'menu-item';
+        
+        // Use textContent for safety
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'item-info';
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'item-name';
+        nameSpan.textContent = item.name;
+        
+        const metaSpan = document.createElement('span');
+        metaSpan.className = 'item-meta';
+        metaSpan.textContent = `$${item.price} • ${item.brand} • ${item.type || 'other'}`;
+        
+        infoDiv.appendChild(nameSpan);
+        infoDiv.appendChild(metaSpan);
+        
+        const addBtn = document.createElement('button');
+        addBtn.className = 'add-btn';
+        addBtn.textContent = 'Add';
+        addBtn.addEventListener('click', () => openAddToCartModal(item));
+
+        el.appendChild(infoDiv);
+        el.appendChild(addBtn);
+        menuList.appendChild(el);
     });
 }
 
@@ -114,6 +157,39 @@ createCartBtn.addEventListener('click', async () => {
         newCartName.value = '';
         renderCarts();
     }
+});
+
+// --- Modal Logic ---
+async function openAddToCartModal(item) {
+    if (!window.PriceStorage) return;
+    const carts = await window.PriceStorage.getCarts();
+    
+    modalItemName.textContent = `Add "${item.name}" to:`;
+    modalCartList.innerHTML = '';
+
+    if (carts.length === 0) {
+        modalCartList.innerHTML = '<p>No carts available. Create one first!</p>';
+    } else {
+        carts.forEach(cart => {
+            const btn = document.createElement('div');
+            btn.className = 'modal-cart-option';
+            btn.textContent = cart.name;
+            btn.addEventListener('click', async () => {
+                await window.PriceStorage.addToCart(cart.id, item.id);
+                // Flash success or close
+                cartModal.classList.add('hidden');
+                // Optional: switch to carts tab or show notification
+                console.log(`Added ${item.name} to ${cart.name}`);
+            });
+            modalCartList.appendChild(btn);
+        });
+    }
+
+    cartModal.classList.remove('hidden');
+}
+
+modalCancel.addEventListener('click', () => {
+    cartModal.classList.add('hidden');
 });
 
 // Initial load

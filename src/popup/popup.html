@@ -26,8 +26,10 @@
     <!-- Menu View -->
     <div id="view-menu" class="view active">
         <div class="card">
-            <h3>Debug Data</h3>
-            <textarea id="debug-data" rows="10" readonly placeholder="No menu data captured yet..."></textarea>
+            <h3>Captured Menu</h3>
+            <div id="menu-list" class="menu-list">
+                <p class="empty-state">No menu data captured yet.</p>
+            </div>
         </div>
     </div>
 
@@ -43,6 +45,17 @@
             <div class="create-cart-form">
                 <input type="text" id="new-cart-name" placeholder="New Cart Name (e.g., Stiiizy Haul)">
                 <button id="create-cart-btn">Create Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cart-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Add to Cart</h3>
+            <p id="modal-item-name"></p>
+            <div id="modal-cart-list"></div>
+            <div class="modal-actions">
+                <button id="modal-cancel">Cancel</button>
             </div>
         </div>
     </div>
