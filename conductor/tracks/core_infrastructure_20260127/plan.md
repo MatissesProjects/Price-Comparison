@@ -17,10 +17,10 @@
 - [x] Task: Analyze Eaze.com structure (Research). 24ae437
     - [x] *Note: Since we cannot browse live, we will assume a standard React/Next.js structure or generic DOM classes first, then refine.*
     - [x] Create a local mock HTML file (`tests/mock_eaze_menu.html`) simulating the Eaze menu structure (using `__NEXT_DATA__` script tag pattern or standard product cards).
-- [ ] Task: Implement Content Script for Data Extraction.
-    - [ ] Write logic in `src/content.js` to look for `script[id="__NEXT_DATA__"]` or specific DOM elements.
-    - [ ] Parse the found data into a clean format: `{ name, price, category, id }`.
-    - [ ] Add console logs to confirm extraction works on the mock page.
+- [x] Task: Implement Content Script for Data Extraction. bd428cf
+    - [x] Write logic in `src/content.js` to look for `script[id="__NEXT_DATA__"]` or specific DOM elements.
+    - [x] Parse the found data into a clean format: `{ name, price, category, id }`.
+    - [x] Add console logs to confirm extraction works on the mock page.
 - [ ] Task: Implement Message Passing.
     - [ ] Update `src/content.js` to send extracted data to `chrome.storage.local` directly (or via background if needed, but direct save is allowed in V3 content scripts for `storage.local`).
     - [ ] Save under key `latest_menu`.
