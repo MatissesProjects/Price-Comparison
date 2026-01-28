@@ -33,4 +33,5 @@
     - [x] Add item list visibility within each cart.
     - [x] Implement quantity incrementing inside the cart.
     - [x] Show individual item discounts in the cart view.
+    - [x] Implement item removal from carts.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Price Engine & Comparison' (Protocol in workflow.md).

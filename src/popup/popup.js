@@ -172,6 +172,7 @@ async function renderCarts() {
                             <div class="product-meta">
                                 ${product.promo_code ? `<span class="product-promo">${product.promo_code}</span>` : ''}
                                 <button class="qty-btn" data-cart-id="${cart.id}" data-product-id="${product.id}">+</button>
+                                <button class="remove-item-btn" data-cart-id="${cart.id}" data-product-id="${product.id}" title="Remove item">&times;</button>
                             </div>
                         </div>
                     `;
@@ -220,6 +221,17 @@ async function renderCarts() {
                 const cartId = btn.getAttribute('data-cart-id');
                 const productId = btn.getAttribute('data-product-id');
                 await window.PriceStorage.addToCart(cartId, productId, 1);
+                renderCarts();
+            });
+        });
+
+        // Add event listeners to remove buttons
+        el.querySelectorAll('.remove-item-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const cartId = btn.getAttribute('data-cart-id');
+                const productId = btn.getAttribute('data-product-id');
+                await window.PriceStorage.removeFromCart(cartId, productId);
                 renderCarts();
             });
         });

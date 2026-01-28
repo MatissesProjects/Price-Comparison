@@ -316,6 +316,21 @@ button:hover {
     background: #d1d5db;
 }
 
+.remove-item-btn {
+    background: none;
+    color: #9ca3af;
+    border: none;
+    font-size: 18px;
+    padding: 0 4px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.remove-item-btn:hover {
+    color: #ef4444;
+    background: none;
+}
+
 .empty-state {
     text-align: center;
     color: #6b7280;

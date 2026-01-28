@@ -64,6 +64,26 @@ const Storage = {
     },
 
     /**
+     * Remove an item from a cart
+     * @param {string} cartId 
+     * @param {string} productId 
+     */
+    removeFromCart: async (cartId, productId) => {
+        const carts = await Storage.getCarts();
+        const cartIndex = carts.findIndex(c => c.id === cartId);
+        if (cartIndex === -1) throw new Error('Cart not found');
+
+        const cart = carts[cartIndex];
+        cart.items = cart.items.filter(i => i.productId !== productId);
+
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ carts }, () => {
+                resolve(cart);
+            });
+        });
+    },
+
+    /**
      * Remove a cart
      * @param {string} cartId 
      */
