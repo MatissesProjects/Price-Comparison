@@ -15,9 +15,9 @@
     - [x] Add a "Carts" tab to `src/popup/popup.html`.
     - [x] Implement "Create Cart" form.
     - [x] Display list of active carts.
-- [ ] Task: Add to Cart Functionality.
-    - [ ] In the "Menu Data" view, add an "Add to Cart" button next to each item.
-    - [ ] specific modal or dropdown to select which cart(s) to add to.
+- [x] Task: Add to Cart Functionality. 230fa3f
+    - [x] In the "Menu Data" view, add an "Add to Cart" button next to each item.
+    - [x] specific modal or dropdown to select which cart(s) to add to.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Cart UI & Interaction' (Protocol in workflow.md).
 
 ## Phase 3: Price Engine & Comparison
