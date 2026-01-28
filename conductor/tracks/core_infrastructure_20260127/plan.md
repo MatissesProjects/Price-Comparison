@@ -33,4 +33,4 @@
     - [x] Add a "Refresh" button to re-read storage.
 - [x] Task: Final Integration Verification. 5621421
     - [x] Verify the full flow: Load Mock Page -> Content Script Runs -> Saves to Storage -> Popup Displays Data.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Storage & Verification' (Protocol in workflow.md).
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Storage & Verification' (Protocol in workflow.md). [checkpoint: b18e217]
