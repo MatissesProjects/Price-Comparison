@@ -11,7 +11,7 @@
 - [x] Task: Create basic Popup UI. 3776776
     - [x] Build a simple HTML layout in `src/popup/popup.html` linking to `../styles.css`.
     - [x] Add a "Status" indicator (Default: "Idle") and a "Debug Data" text area.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Project Skeleton & Manifest' (Protocol in workflow.md).
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Project Skeleton & Manifest' (Protocol in workflow.md). [checkpoint: 9773951]
 
 ## Phase 2: Data Ingestion Logic
 - [ ] Task: Analyze Eaze.com structure (Research).
