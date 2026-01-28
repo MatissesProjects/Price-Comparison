@@ -21,9 +21,9 @@
     - [x] Write logic in `src/content.js` to look for `script[id="__NEXT_DATA__"]` or specific DOM elements.
     - [x] Parse the found data into a clean format: `{ name, price, category, id }`.
     - [x] Add console logs to confirm extraction works on the mock page.
-- [ ] Task: Implement Message Passing.
-    - [ ] Update `src/content.js` to send extracted data to `chrome.storage.local` directly (or via background if needed, but direct save is allowed in V3 content scripts for `storage.local`).
-    - [ ] Save under key `latest_menu`.
+- [x] Task: Implement Message Passing. 0a2f37d
+    - [x] Update `src/content.js` to send extracted data to `chrome.storage.local` directly (or via background if needed, but direct save is allowed in V3 content scripts for `storage.local`).
+    - [x] Save under key `latest_menu`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Data Ingestion Logic' (Protocol in workflow.md).
 
 ## Phase 3: Storage & Verification
