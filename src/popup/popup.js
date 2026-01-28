@@ -125,9 +125,12 @@ refreshBtn.addEventListener('click', () => updatePopup(true));
 
 // --- Cart Logic ---
 async function renderCarts() {
-    if (!window.PriceStorage) return;
+    if (!window.PriceStorage || !window.PriceEngine) return;
 
     const carts = await window.PriceStorage.getCarts();
+    const result = await new Promise(r => chrome.storage.local.get(['latest_menu'], r));
+    const products = result.latest_menu ? result.latest_menu.items : [];
+    
     cartList.innerHTML = '';
 
     if (carts.length === 0) {
@@ -135,15 +138,92 @@ async function renderCarts() {
         return;
     }
 
-    carts.forEach(cart => {
+    // Calculate totals for all carts first to find the best value
+    const cartTotals = carts.map(cart => ({
+        cart,
+        totals: window.PriceEngine.calculateCartTotal(cart, products)
+    }));
+
+    // Find min total among non-empty carts
+    const validCarts = cartTotals.filter(ct => ct.totals.itemCount > 0);
+    const minTotal = validCarts.length > 0 ? Math.min(...validCarts.map(ct => ct.totals.total)) : Infinity;
+
+    cartTotals.forEach(({ cart, totals }) => {
+        const isBestValue = validCarts.length > 1 && totals.total === minTotal && totals.total > 0;
+        
         const el = document.createElement('div');
-        el.className = 'cart-item';
+        el.className = `cart-item ${isBestValue ? 'best-value' : ''}`;
+        
+        let itemsHtml = '';
+        if (cart.items.length > 0) {
+            itemsHtml = '<div class="cart-items-list">';
+            cart.items.forEach(item => {
+                const product = products.find(p => p.id === item.productId);
+                if (product) {
+                    const promo = window.PriceEngine.parsePromo(product.promo_code);
+                    const itemDiscount = promo.type === 'percent' ? (product.price * promo.value) : promo.value;
+                    
+                    itemsHtml += `
+                        <div class="cart-product-row">
+                            <div class="product-main">
+                                <span class="product-name">${product.name}</span>
+                                <span class="product-price">$${product.price.toFixed(2)} x ${item.quantity}</span>
+                            </div>
+                            <div class="product-meta">
+                                ${product.promo_code ? `<span class="product-promo">${product.promo_code}</span>` : ''}
+                                <button class="qty-btn" data-cart-id="${cart.id}" data-product-id="${product.id}">+</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            itemsHtml += '</div>';
+        }
+
+        let totalsHtml = '';
+        if (totals.itemCount > 0) {
+            totalsHtml = `
+                <div class="cart-totals">
+                    <div class="total-row">
+                        <span>Subtotal:</span>
+                        <span>$${totals.subtotal.toFixed(2)}</span>
+                    </div>
+                    ${totals.discount > 0 ? `
+                    <div class="total-row discount">
+                        <span>Discount:</span>
+                        <span>-$${totals.discount.toFixed(2)}</span>
+                    </div>` : ''}
+                    <div class="total-row grand-total">
+                        <span>Total:</span>
+                        <span>$${totals.total.toFixed(2)}</span>
+                    </div>
+                </div>
+            `;
+        } else {
+            totalsHtml = '<p class="empty-state">Cart is empty</p>';
+        }
+
         el.innerHTML = `
             <div class="cart-header">
                 <span class="cart-name">${cart.name}</span>
-                <span class="cart-count">${cart.items.length} items</span>
+                ${isBestValue ? '<span class="badge">Best Value</span>' : ''}
+                <span class="cart-count">${totals.itemCount} items</span>
             </div>
+            ${itemsHtml}
+            ${totalsHtml}
         `;
+
+        // Add event listeners to qty buttons
+        el.querySelectorAll('.qty-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const cartId = btn.getAttribute('data-cart-id');
+                const productId = btn.getAttribute('data-product-id');
+                await window.PriceStorage.addToCart(cartId, productId, 1);
+                renderCarts();
+            });
+        });
+
         cartList.appendChild(el);
     });
 }
