@@ -69,7 +69,8 @@ try {
         if (item.name === 'Lemon Cherry Gelato' && 
             item.price === 31 && 
             item.brand === 'STIIIZY' &&
-            item.promo_code === 'USE CODE 30OFF') {
+            item.promo_code === 'USE CODE 30OFF' &&
+            item.type === 'other') {
             console.log('PASS: Data extraction successful for live Eaze structure.');
             process.exit(0);
         } else {

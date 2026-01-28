@@ -5,6 +5,16 @@ function extractMenu() {
     console.log('Attempting extraction at:', window.location.href);
     let products = [];
 
+    const vapeKeywords = ['vape', 'cartridge', 'pod', 'disposable', '510', 'battery'];
+    
+    function detectType(name, category) {
+        const fullText = `${name} ${category}`.toLowerCase();
+        if (vapeKeywords.some(keyword => fullText.includes(keyword))) {
+            return 'vape';
+        }
+        return 'other';
+    }
+
     // DOM Scraping Logic
     console.log('Scraping DOM for product cards...');
     
@@ -26,14 +36,17 @@ function extractMenu() {
             if (nameEl && priceEl) {
                 const priceText = priceEl.textContent.trim().replace('$', '');
                 const productId = linkEl?.getAttribute('href')?.split('/cid/')?.[1] || `scraped_${Math.random().toString(36).substr(2, 9)}`;
+                const name = nameEl.textContent.trim();
+                const category = card.querySelector('.e1dcvvwe0')?.textContent?.trim() || 'Unknown';
                 
                 products.push({
                     id: productId,
-                    name: nameEl.textContent.trim(),
+                    name: name,
                     price: parseFloat(priceText),
-                    category: card.querySelector('.e1dcvvwe0')?.textContent?.trim() || 'Unknown',
+                    category: category,
                     brand: brandEl?.textContent?.trim() || 'Unknown',
-                    promo_code: promoEl ? promoEl.textContent.trim() : null
+                    promo_code: promoEl ? promoEl.textContent.trim() : null,
+                    type: detectType(name, category)
                 });
             }
         });
