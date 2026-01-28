@@ -92,6 +92,11 @@ function extractMenu() {
 }
 
 function saveMenuData(products) {
+    if (!chrome.runtime?.id) {
+        console.warn('Price Comparison Tool: Extension context invalidated. Stopping extraction.');
+        observer.disconnect();
+        return;
+    }
     const data = {
         timestamp: new Date().toISOString(),
         items: products
@@ -116,6 +121,7 @@ observer.observe(document.body, { childList: true, subtree: true });
 
 // Message Listener for popup communication
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (!chrome.runtime?.id) return;
     if (request.action === 'REFRESH_DATA') {
         console.log('Received refresh request from popup.');
         extractMenu();
