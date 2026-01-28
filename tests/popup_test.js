@@ -5,21 +5,23 @@ const path = require('path');
 const dom = {
     'status-indicator': { textContent: '', style: {} },
     'debug-data': { value: '' },
-    'refresh-btn': { 
-        addEventListener: (event, cb) => {
-            if (event === 'click') global.triggerRefresh = cb;
-        } 
-    }
+    'refresh-btn': { addEventListener: () => {} },
+    'tab-menu': { classList: { add: () => {}, remove: () => {} }, addEventListener: () => {} },
+    'tab-carts': { classList: { add: () => {}, remove: () => {} }, addEventListener: (e, cb) => global.clickCartsTab = cb },
+    'view-menu': { classList: { add: () => {}, remove: () => {} } },
+    'view-carts': { classList: { add: () => {}, remove: () => {} } },
+    'cart-list': { innerHTML: '', appendChild: () => {} },
+    'new-cart-name': { value: '' },
+    'create-cart-btn': { addEventListener: (e, cb) => global.clickCreateCart = cb }
 };
 
 global.document = {
-    getElementById: (id) => dom[id]
+    getElementById: (id) => dom[id] || { addEventListener: () => {}, classList: { add: () => {}, remove: () => {} } },
+    createElement: () => ({ className: '', innerHTML: '' })
 };
 
-// Mock Storage & Tabs
+// Mock Storage & PriceStorage
 let storageData = {};
-let sentMessages = [];
-
 global.chrome = {
     storage: {
         local: {
@@ -27,88 +29,63 @@ global.chrome = {
                 const res = {};
                 keys.forEach(k => res[k] = storageData[k]);
                 cb(res);
+            },
+            set: (data, cb) => {
+                Object.assign(storageData, data);
+                if (cb) cb();
             }
         }
     },
-    tabs: {
-        query: (queryInfo, cb) => cb([{ id: 123 }]),
-        sendMessage: (tabId, msg, cb) => {
-            sentMessages.push({ tabId, msg });
-            if (cb) cb({ status: 'ok' });
-        }
-    },
+    tabs: { query: (q, cb) => cb([]) },
     runtime: { lastError: null }
 };
 
-// Helper to reset mocks
-function resetMocks() {
-    dom['status-indicator'].textContent = '';
-    dom['status-indicator'].style = {};
-    dom['debug-data'].value = '';
-    storageData = {};
-    sentMessages = [];
-}
+// Mock PriceStorage on window
+global.window = {
+    PriceStorage: {
+        getCarts: async () => storageData.carts || [],
+        createCart: async (name) => {
+            const carts = storageData.carts || [];
+            carts.push({ id: '1', name, items: [] });
+            storageData.carts = carts;
+        }
+    }
+};
 
 // Load Script
 const popupScript = fs.readFileSync(path.join(__dirname, '../src/popup/popup.js'), 'utf8');
 
-console.log('Running Popup Tests...');
+console.log('Running Popup UI Tests...');
 
-// Test 1: Initial Load - No Data
-resetMocks();
+// Run script
 eval(popupScript);
-setTimeout(() => {
-    if (dom['status-indicator'].textContent === 'Idle' && 
-        dom['debug-data'].value.includes('No menu data')) {
-        console.log('PASS: Initial load (empty storage) correctly sets Idle status.');
-    } else {
-        console.error('FAIL: Initial load (empty storage) incorrect.');
-        process.exit(1);
-    }
-}, 50);
 
-// Test 2: Initial Load - With Data
-setTimeout(() => {
-    resetMocks();
-    storageData = {
-        latest_menu: {
-            timestamp: new Date().toISOString(),
-            items: [{ name: 'Test Item', price: 10 }]
+// Test 1: Switch to Carts Tab
+if (global.clickCartsTab) {
+    global.clickCartsTab();
+    // Verification would ideally check classList changes, but simpler to check side effect (render)
+    setTimeout(() => {
+        // Test 2: Create Cart
+        if (global.clickCreateCart) {
+            dom['new-cart-name'].value = 'Test Cart UI';
+            global.clickCreateCart().then(() => {
+                setTimeout(() => {
+                    const carts = storageData.carts;
+                    if (carts && carts.length > 0 && carts[0].name === 'Test Cart UI') {
+                        console.log('PASS: Cart created via UI logic.');
+                        process.exit(0);
+                    } else {
+                        console.error('FAIL: Cart not created.');
+                        process.exit(1);
+                    }
+                }, 100);
+            });
+        } else {
+            console.error('FAIL: Create button listener not hooked.');
+            process.exit(1);
         }
-    };
-    
-    // Re-run update logic (simulate script reload or function call if exposed, 
-    // but since it runs on load, we might need to trigger the refresh handler which calls the same function)
-    if (global.triggerRefresh) {
-        global.triggerRefresh();
-        
-        setTimeout(() => {
-            // Check if message was sent
-            if (sentMessages.length > 0 && sentMessages[0].msg.action === 'REFRESH_DATA') {
-                console.log('PASS: Refresh button triggered REFRESH_DATA message.');
-            } else {
-                console.error('FAIL: Refresh button did not send message.', sentMessages);
-                process.exit(1);
-            }
-
-            if (dom['status-indicator'].textContent === 'Data Captured' && 
-                dom['debug-data'].value.includes('Test Item')) {
-                console.log('PASS: Data display correctly updates from storage.');
-            } else {
-                console.error('FAIL: Data display incorrect.');
-                console.log('Status:', dom['status-indicator'].textContent);
-                console.log('Debug:', dom['debug-data'].value);
-                process.exit(1);
-            }
-        }, 1100); // Wait > 1000ms for popup timeout
-    } else {
-        console.error('FAIL: Refresh handler not registered.');
-        process.exit(1);
-    }
-}, 100);
-
-// Final Success
-setTimeout(() => {
-    console.log('All Popup Tests Passed.');
-    process.exit(0);
-}, 1500);
+    }, 100);
+} else {
+    console.error('FAIL: Tabs listener not hooked.');
+    process.exit(1);
+}

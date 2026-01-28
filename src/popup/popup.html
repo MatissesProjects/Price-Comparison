@@ -17,11 +17,37 @@
         </div>
     </div>
 
-    <div class="card">
-        <h3>Debug Data</h3>
-        <textarea id="debug-data" rows="10" readonly placeholder="No menu data captured yet..."></textarea>
+    <!-- Navigation Tabs -->
+    <div class="tabs">
+        <button id="tab-menu" class="tab-btn active">Menu Data</button>
+        <button id="tab-carts" class="tab-btn">Carts</button>
     </div>
 
+    <!-- Menu View -->
+    <div id="view-menu" class="view active">
+        <div class="card">
+            <h3>Debug Data</h3>
+            <textarea id="debug-data" rows="10" readonly placeholder="No menu data captured yet..."></textarea>
+        </div>
+    </div>
+
+    <!-- Carts View -->
+    <div id="view-carts" class="view hidden">
+        <div class="card">
+            <h3>My Carts</h3>
+            <div id="cart-list" class="cart-list">
+                <!-- Carts will be injected here -->
+                <p class="empty-state">No carts created yet.</p>
+            </div>
+            
+            <div class="create-cart-form">
+                <input type="text" id="new-cart-name" placeholder="New Cart Name (e.g., Stiiizy Haul)">
+                <button id="create-cart-btn">Create Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../utils/storage.js"></script>
     <script src="popup.js"></script>
 </body>
 </html>
