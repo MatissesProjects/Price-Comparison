@@ -55,6 +55,7 @@ const contentScript = fs.readFileSync(path.join(__dirname, '../src/content.js'),
 
 try {
     eval(contentScript);
+
     
     setTimeout(() => {
         if (!storageData.latest_menu) {

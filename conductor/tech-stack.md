@@ -11,4 +11,5 @@
 
 ## Architecture
 - **State Management:** Simple JavaScript objects persisted via `chrome.storage.local`.
-- **Communication:** Standard Message Passing between content scripts (for menu ingestion) and the popup/background scripts.
+- **Communication:** Standard Message Passing between content scripts and the popup/background scripts (e.g., REFRESH_DATA trigger).
+- **Extraction Strategy:** Targeted DOM scraping using specific e2e-id and structural selectors for reliable data capture (with promo code support).
