@@ -31,13 +31,23 @@ global.document = {
                 hasAttribute: () => false,
                 closest: () => null,
                 parentElement: { parentElement: null },
+                querySelectorAll: (s) => {
+                    if (s === 'p, div, span') {
+                        return [
+                            { textContent: item.name },
+                            { textContent: item.brand },
+                            { textContent: item.price },
+                            { textContent: item.category },
+                            { textContent: item.thc }
+                        ];
+                    }
+                    return [];
+                },
                 querySelector: (s) => {
                     if (s === '[data-e2eid="productCardName"]') return { textContent: item.name };
                     if (s === '.e1mku4dk9') return { textContent: item.brand };
                     if (s === 'button[aria-label="Add to bag"] span span, .e1qfw1ka4 span') return { textContent: item.price };
                     if (s === '.e1dcvvwe0') return { textContent: item.category };
-                    // Mock THC selector based on common eaze class or text match
-                    if (s === '.ecac5km0') return { textContent: item.thc }; 
                     return null;
                 }
             }));

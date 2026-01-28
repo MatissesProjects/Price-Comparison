@@ -52,7 +52,16 @@ function extractMenu() {
             const priceEl = card.querySelector('button[aria-label="Add to bag"] span span, .e1qfw1ka4 span');
             const linkEl = card.querySelector('a[href*="/products/"]');
             const promoEl = card.querySelector('div[data-e2eid="tag"] span');
-            const thcEl = card.querySelector('.ecac5km0'); // THC Selector
+            
+            // Text-based THC extraction
+            let thc = null;
+            const potentialThcElements = card.querySelectorAll('p, div, span');
+            for (const el of potentialThcElements) {
+                if (el.textContent.includes('% THC')) {
+                    thc = el.textContent.trim();
+                    break;
+                }
+            }
 
             if (nameEl && priceEl) {
                 const priceText = priceEl.textContent.trim().replace('$', '');
@@ -60,7 +69,6 @@ function extractMenu() {
                 const name = nameEl.textContent.trim();
                 const category = card.querySelector('.e1dcvvwe0')?.textContent?.trim() || 'Unknown';
                 const brand = brandEl?.textContent?.trim() || 'Unknown';
-                const thc = thcEl?.textContent?.trim() || null;
                 
                 products.push({
                     id: productId,
