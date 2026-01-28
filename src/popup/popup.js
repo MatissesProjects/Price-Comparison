@@ -19,6 +19,22 @@ const menuSearch = document.getElementById('menu-search');
 let currentMenuItems = [];
 let currentCategory = 'all';
 
+// --- Tab Logic ---
+function switchTab(tab) {
+    if (tab === 'menu') {
+        tabMenu.classList.add('active');
+        tabCarts.classList.remove('active');
+        viewMenu.classList.remove('hidden');
+        viewCarts.classList.add('hidden');
+    } else {
+        tabMenu.classList.remove('active');
+        tabCarts.classList.add('active');
+        viewMenu.classList.add('hidden');
+        viewCarts.classList.remove('hidden');
+        renderCarts(); 
+    }
+}
+
 tabMenu.addEventListener('click', () => switchTab('menu'));
 tabCarts.addEventListener('click', () => switchTab('carts'));
 
