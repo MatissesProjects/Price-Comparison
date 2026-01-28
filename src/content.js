@@ -21,7 +21,6 @@ function extractMenu() {
                     brand: p.brand
                 }));
                 console.log('Extracted via __NEXT_DATA__:', products);
-                return products;
             }
         } catch (e) {
             console.error('Error parsing __NEXT_DATA__:', e);
@@ -29,28 +28,50 @@ function extractMenu() {
     }
 
     // Strategy 2: DOM Scraping (Fallback)
-    const cards = document.querySelectorAll('.product-card');
-    if (cards.length > 0) {
-        cards.forEach(card => {
-            const name = card.querySelector('.product-title')?.textContent;
-            const priceStr = card.querySelector('.product-price')?.textContent;
-            const category = card.querySelector('.product-category')?.textContent;
-            const id = card.getAttribute('data-id');
+    if (products.length === 0) {
+        const cards = document.querySelectorAll('.product-card');
+        if (cards.length > 0) {
+            cards.forEach(card => {
+                const name = card.querySelector('.product-title')?.textContent;
+                const priceStr = card.querySelector('.product-price')?.textContent;
+                const category = card.querySelector('.product-category')?.textContent;
+                const id = card.getAttribute('data-id');
 
-            if (name && priceStr) {
-                products.push({
-                    id: id || `generated_${Math.random()}`,
-                    name: name,
-                    price: parseFloat(priceStr.replace('$', '')),
-                    category: category || 'Unknown',
-                    brand: 'Unknown'
-                });
-            }
-        });
-        console.log('Extracted via DOM scraping:', products);
+                if (name && priceStr) {
+                    products.push({
+                        id: id || `generated_${Math.random()}`,
+                        name: name,
+                        price: parseFloat(priceStr.replace('$', '')),
+                        category: category || 'Unknown',
+                        brand: 'Unknown'
+                    });
+                }
+            });
+            console.log('Extracted via DOM scraping:', products);
+        }
+    }
+
+    if (products.length > 0) {
+        saveMenuData(products);
+    } else {
+        console.warn('No products found on page.');
     }
 
     return products;
+}
+
+function saveMenuData(products) {
+    const data = {
+        timestamp: new Date().toISOString(),
+        items: products
+    };
+    chrome.storage.local.set({ latest_menu: data }, () => {
+        if (chrome.runtime.lastError) {
+            console.error('Error saving menu data:', chrome.runtime.lastError);
+        } else {
+            console.log('Menu data saved to storage:', data);
+        }
+    });
 }
 
 // Run extraction on load
