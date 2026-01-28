@@ -1,0 +1,32 @@
+# Implementation Plan - Cart Management and Price Engine
+
+## Phase 1: Data Structure & Vape Detection
+- [x] Task: Refine Vape Detection Logic. 97b4634
+    - [x] Update `src/content.js` to check for keywords (cartridge, pod, disposable, vape) and assign a normalized `type`.
+    - [x] Update `tests/node_test.js` to verify vape detection.
+- [ ] Task: Implement Cart Data Store.
+    - [ ] Create `src/utils/storage.js` (or similar) to abstract `chrome.storage.local` operations for Carts and Products.
+    - [ ] Define helper functions: `createCart(name)`, `addToCart(cartId, productId)`, `getCart(id)`.
+- [ ] Task: Conductor - User Manual Verification 'Phase 1: Data Structure & Vape Detection' (Protocol in workflow.md).
+
+## Phase 2: Cart UI & Interaction
+- [ ] Task: Build Cart Management UI.
+    - [ ] Add a "Carts" tab to `src/popup/popup.html`.
+    - [ ] Implement "Create Cart" form.
+    - [ ] Display list of active carts.
+- [ ] Task: Add to Cart Functionality.
+    - [ ] In the "Menu Data" view, add an "Add to Cart" button next to each item.
+    - [ ] specific modal or dropdown to select which cart(s) to add to.
+- [ ] Task: Conductor - User Manual Verification 'Phase 2: Cart UI & Interaction' (Protocol in workflow.md).
+
+## Phase 3: Price Engine & Comparison
+- [ ] Task: Implement Price Calculation Logic.
+    - [ ] Create `src/utils/pricing.js`.
+    - [ ] Function `calculateCartTotal(cart, products)`:
+        -   Iterate items.
+        -   Parse `promo_code` (e.g., "30OFF" -> 0.30 multiplier).
+        -   Return `{ subtotal, discount, total }`.
+- [ ] Task: Update Cart UI with Totals.
+    - [ ] Display calculated totals for each cart card.
+    -   Highlight the cheapest cart (e.g., green border or "Best Value" badge).
+- [ ] Task: Conductor - User Manual Verification 'Phase 3: Price Engine & Comparison' (Protocol in workflow.md).
