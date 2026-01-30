@@ -24,6 +24,18 @@ const dom = {
 
 global.document = {
     getElementById: (id) => dom[id] || { addEventListener: () => {}, classList: { add: () => {}, remove: () => {} } },
+    querySelectorAll: (selector) => {
+        if (selector === '.filter-btn') {
+            return [
+                { 
+                    addEventListener: () => {}, 
+                    classList: { remove: () => {}, add: () => {} }, 
+                    getAttribute: () => 'all' 
+                }
+            ];
+        }
+        return [];
+    },
     createElement: (tag) => ({ 
         className: '', 
         innerHTML: '', 

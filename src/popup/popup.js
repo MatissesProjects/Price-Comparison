@@ -16,6 +16,16 @@ const cartList = document.getElementById('cart-list');
 
 // Search
 const menuSearch = document.getElementById('menu-search');
+
+// Cart Creation
+const newCartName = document.getElementById('new-cart-name');
+const createCartBtn = document.getElementById('create-cart-btn');
+
+// Modal
+const cartModal = document.getElementById('cart-modal');
+const modalItemName = document.getElementById('modal-item-name');
+const modalCartList = document.getElementById('modal-cart-list');
+const modalCancel = document.getElementById('modal-cancel');
 let currentMenuItems = [];
 let currentCategory = 'all';
 
